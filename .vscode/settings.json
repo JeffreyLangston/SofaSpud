@@ -1,0 +1,14 @@
+// Place your settings in this file to overwrite the default settings
+{
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": false,
+    "editor.renderIndentGuides": false,
+    "javascript.format.enable": false,
+    "javascript.validate.enable": false,
+    "prettier.eslintIntegration": true,
+    "git.autofetch": true,
+    "workbench.colorTheme": "Cobalt2",
+    "workbench.iconTheme": "material-icon-theme",
+    "flow.useNPMPackagedFlow": true
+}
