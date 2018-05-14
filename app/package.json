@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "material-design-icons": "^3.0.1",
+    "material-ui": "^1.0.0-beta.40",
+    "material-ui-icons": "^1.0.0-beta.36",
+    "mdi": "^2.2.43",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "react-scripts": "1.1.1",
+    "typeface-roboto": "0.0.54"
   },
   "scripts": {
     "start": "react-scripts start",
