@@ -1,12 +1,31 @@
 {
   "configurations": [
     {
-      "name": "Current TS File",
-      "type": "node",
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "name": "DEBUG",
+      "outFiles": [
+        "${workspaceFolder}/FundSyncService/dist**/*.js"
+      ],
+      "preLaunchTask": "build",
+      "program": "${workspaceRoot}/FundSyncService/dist/index.js",
       "request": "launch",
-      "program": "${workspaceRoot}/FundSyncService/node_modules/.bin/ts-node",
-      "args": ["${relativeFile}"],
-      "protocol": "inspector"
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "runtimeExecutable": null,
+      "sourceMaps": true,
+      "stopOnEntry": false,
+      "type": "node"
+    },
+    {
+      "name": "Attach",
+      "type": "node",
+      "request": "attach",
+      "port": 5858
     }
   ]
 }

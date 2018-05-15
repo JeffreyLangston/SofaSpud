@@ -8,10 +8,19 @@
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
-    "typeRoots": ["../node_modules/@types"],
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
     "allowSyntheticDefaultImports": true
   },
-  "files": ["./node_modules/@types/node/index.d.ts"],
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "../*.js"]
+  "files": [
+    "./node_modules/@types/node/index.d.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../*.js"
+  ]
 }

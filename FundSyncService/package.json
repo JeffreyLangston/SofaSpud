@@ -7,12 +7,12 @@
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
     "debug": "nodemon --inspect dist/",
     "build": "tsc",
-    "start": "node src/index.js",
-    "start:watch": "nodemon src/index.js",
-    "start:debug": "node --inspect src/index.js",
-    "start:debug:brk": "node --inspect-brk src/index.js",
-    "start:debug:ts": "node --inspect --require ts-node/register src/index.ts",
-    "start:debug:ts:brk": "node --inspect-brk --require ts-node/register src/index.ts"
+    "start": "node dist/index.js",
+    "start:watch": "nodemon dist//index.js",
+    "start:debug": "node --inspect dist//index.js",
+    "start:debug:brk": "node --inspect-brk dist//index.js",
+    "start:debug:ts": "node --inspect --require ts-node/register dist//index.ts",
+    "start:debug:ts:brk": "node --inspect-brk --require ts-node/register dist//index.ts"
   },
   "keywords": [],
   "author": "Jeff Langston",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@types/request": "^2.47.0",
+    "firebase-admin": "^5.12.0",
     "request": "^2.85.0",
     "tslint-config-airbnb": "^5.8.0"
   }
