@@ -1,8 +1,17 @@
 import * as request from "request";
 import * as admin from 'firebase-admin';
+import { logger } from './logger';
+import { FundQuote } from './Model/FundQuote';
+import { resolve } from "dns";
+import { SymbolSync } from './SymbolSync'
 
+var log = new logger();
 var serviceAccount = require('E:/GoogleDrive/sofaspuddev-firebase-adminsdk-00jxe-e314820134.json');
-console.log("Fund Sync Service started!");
+log.System("Fund Sync Service started!");
+
+const FundSymbolSync = new SymbolSync();
+
+FundSymbolSync.SyncTrackedFundSymbols();
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -12,14 +21,13 @@ admin.initializeApp({
 var db = admin.database();
 
 
-const FundUrl =
-  "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=ZAG&interval=60min&outputsize=full&apikey=Q2I2J8MN4GGIRIZI";
+//const FundUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=ZAG&interval=60min&outputsize=full&apikey=Q2I2J8MN4GGIRIZI";
 const FundUrlFunction = "TIME_SERIES_INTRADAY";
 const QueryFrequency = "60min";
 const outputSize = "full";
 
 const ApiKey = "Q2I2J8MN4GGIRIZI";
-const SymbolSample = "ZAG";
+const SymbolSample = "ITOT";
 
 class FundSyncService {
   constructor() { }
@@ -29,23 +37,57 @@ class FundSyncService {
   }
 
   GetFunds() {
-    console.log(this.GetFundURL("ZAG"));
-    request(this.GetFundURL("ZAG"), { json: true }, (err, res, body) => {
-      if (err || body["Error Message"] != undefined) {
-        return console.log("Error" + err);
-      }
-      console.log(body);
-      let fundData = body["Time Series (60min)"];
-      let firstEntryKey = Object.keys(body["Time Series (60min)"]);
-      let priceData = fundData[firstEntryKey[0]];
-      let closePrice = priceData["4. close"];
-      var ref = db.ref("/Funds").set({
-        symbol: "ZAG",
-        price: closePrice
-      });
-      console.log("Fund data received");
+    this.GetFundData(SymbolSample).then(function (fundData) {
+      this.SaveFundData(fundData).then(function (saveData) {
+        log.Success('Fund quote updated!');
+      }.bind(this)).catch(function (error) {
+        log.Error(error);
+      })
+    }.bind(this)
+    ).catch(function (error) {
+      log.Error(error);
     });
   }
+
+  SaveFundData(FundQuote: FundQuote): Promise<any> {
+    var ref = db.ref(FundQuote.StoreName);
+    return ref.update(
+      {
+        [SymbolSample]: FundQuote
+      }, function (error) {
+        if (error) {
+          log.Error("Data could not be saved." + error);
+        } else {
+          log.Success("Data saved successfully.");
+        }
+      }
+    );
+  }
+
+
+
+  GetFundData(FundSymbol): Promise<FundQuote> {
+    return new Promise((resolve, reject) => {
+      log.Information(this.GetFundURL(FundSymbol));
+      request(this.GetFundURL(FundSymbol), { json: true }, (err, res, body) => {
+        if (err || body === undefined || body["Error Message"] != undefined) {
+          log.Error("Error:" + err);
+          reject("Error: " + err);
+        }
+        log.Success("Fund data received");
+        const fundData = body["Time Series (60min)"];
+        const firstEntryKey = Object.keys(body["Time Series (60min)"]);
+        const priceDate = firstEntryKey[0];
+        const closePrice = fundData[firstEntryKey[0]]["4. close"];
+        const newFundQuote = new FundQuote(FundSymbol, closePrice, new Date(priceDate));
+        console.log(newFundQuote);
+        resolve(newFundQuote);
+      }
+      )
+    });
+  }
+
+
 }
 
 const fundSync = new FundSyncService();
