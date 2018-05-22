@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Fund {
-    constructor(symbol, name) {
+    constructor(symbol) {
         this.Symbol = symbol;
-        this.Name = name;
     }
 }
 exports.Fund = Fund;
