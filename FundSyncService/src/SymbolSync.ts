@@ -19,7 +19,7 @@ export class SymbolSync {
               Symbol: fund.Symbol,
               Name: fund.Name
             });
-            console.log("updated: " + fund.Symbol);
+            //console.log("updated: " + fund.Symbol);
           });
         }.bind(this)
       )

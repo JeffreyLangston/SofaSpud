@@ -17,7 +17,7 @@ admin.initializeApp({
 var db = admin.database();
 const FundSymbolSync = new SymbolSync(db);
 
-FundSymbolSync.SyncTrackedFundSymbols();
+//FundSymbolSync.SyncTrackedFundSymbols();
 
 //const FundUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=ZAG&interval=60min&outputsize=full&apikey=Q2I2J8MN4GGIRIZI";
 const FundUrlFunction = "TIME_SERIES_INTRADAY";
@@ -38,29 +38,27 @@ class FundSyncService {
     return db.ref(Fund.StoreName);
   }
 
-  ProcessFundRecord(fundRecord) {
-    return new Promise(() =>
-      this.GetFundData(fundRecord["Symbol"])
-        .then(
-          function(fundData) {
-            this.SaveFundData(fundData)
-              .then(
-                function(saveData) {
-                  log.Success("Fund quote updated!");
-                }.bind(this)
-              )
-              .catch(function(error) {
-                log.Error(
-                  "Error Saving Record: " + fundData["Symbol"] + " " + error
-                );
-              });
-          }.bind(this)
-        )
-        .catch(function(error) {
-          FailedFundSyncs.push(fundRecord["Symbol"]);
-          log.Error(error);
-        })
-    );
+  async ProcessFundRecord(fundRecord) {
+    this.GetFundData(fundRecord["Symbol"])
+      .then(
+        function(fundData) {
+          this.SaveFundData(fundData)
+            .then(
+              function(saveData) {
+                log.Success("Fund quote updated!");
+              }.bind(this)
+            )
+            .catch(function(error) {
+              log.Error(
+                "Error Saving Record: " + fundData["Symbol"] + " " + error
+              );
+            });
+        }.bind(this)
+      )
+      .catch(function(error) {
+        FailedFundSyncs.push(fundRecord["Symbol"]);
+        log.Error(error);
+      });
   }
 
   sleeper(ms) {
@@ -69,20 +67,25 @@ class FundSyncService {
     };
   }
 
-  ProcessFundQuery(FundSnapshot: admin.database.DataSnapshot) {
+  async ProcessFundQuery(FundSnapshot: admin.database.DataSnapshot) {
     var childKey = FundSnapshot.key;
     var childData = FundSnapshot.val();
     var childDataKeys = Object.keys(childData);
-    childDataKeys.forEach(
-      function(fundKey) {
-        log.Information("query");
-        const fundRecord = childData[fundKey];
-        this.ProcessFundRecord(fundRecord).then(this.sleeper(1000));
-      }.bind(this)
-    );
+    for (const fundKey of childDataKeys) {
+      log.Information("query for " + fundKey);
+      const fundRecord = childData[fundKey];
+      await this.ProcessFundRecord(fundRecord)
+        .then(function() {
+          log.Success("successful process!");
+        })
+        .catch(function() {
+          log.Error("Error processing!");
+        });
+      await this.sleep(3000);
+    }
   }
 
-  SynchronizeFunds() {
+  async SynchronizeFunds() {
     var fundList = this.GetAllFundsFromDatabase();
     fundList
       .once("value")
@@ -101,7 +104,7 @@ class FundSyncService {
     log.Information("Processing Failed Queries...");
   }
 
-  SaveFundData(FundQuote: Fund): Promise<any> {
+  async SaveFundData(FundQuote: Fund): Promise<void> {
     var ref = db.ref(Fund.StoreName);
     return ref.update(
       {
@@ -121,11 +124,22 @@ class FundSyncService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  GetFundData(FundSymbol): Promise<Fund> {
-    return new Promise((resolve, reject) => {
+  async GetFundData(FundSymbol): Promise<Fund> {
+    return new Promise<Fund>((resolve, reject) => {
       log.Information(this.GetFundURL(FundSymbol));
       request(this.GetFundURL(FundSymbol), { json: true }, (err, res, body) => {
-        if (err || body === undefined || body["Error Message"]) {
+        if (
+          err ||
+          body === undefined ||
+          body["Error Message"] ||
+          body["Time Series (60min)"] === false
+        ) {
+          if (err) {
+            log.Error(err);
+          }
+          if (body) {
+            log.Error(body);
+          }
           log.Error("Error Getting Symbol: " + FundSymbol + " " + err);
           reject("Error: " + err);
         } else {
@@ -136,7 +150,7 @@ class FundSyncService {
           const priceDate = firstEntryKey[0];
           const closePrice = fundData[firstEntryKey[0]]["4. close"];
 
-          const newFundQuote = new Fund(FundSymbol);
+          const newFundQuote: Fund = new Fund(FundSymbol);
           newFundQuote.Price = closePrice;
           newFundQuote.QuoteDate = new Date(priceDate);
 
@@ -149,4 +163,5 @@ class FundSyncService {
 }
 
 const fundSync = new FundSyncService();
-fundSync.SynchronizeFunds();
+fundSync.SynchronizeFunds().then();
+console.log("exiting application");
