@@ -1,4 +1,4 @@
-import { Fund } from "./Model/Fund";
+import { Fund } from "../Model/Fund";
 import * as fs from "fs";
 import * as path from "path";
 import { resolve } from "url";
@@ -9,30 +9,30 @@ export class SymbolSync {
     this.database = db;
   }
   private database: admin.database.Database;
+  private FundListDirectory: string = "../Data/FundList.json";
 
   SyncTrackedFundSymbols() {
     this.getFundList()
       .then(
-        function(fundList) {
+        function (fundList) {
           fundList.forEach(fund => {
-            this.database.ref("Funds/" + fund.Symbol).update({
+            this.database.ref(Fund.StoreName + "/" + fund.Symbol).update({
               Symbol: fund.Symbol,
               Name: fund.Name
             });
-            //console.log("updated: " + fund.Symbol);
           });
         }.bind(this)
       )
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   }
 
   getFundList(): Promise<Array<Fund>> {
     return new Promise<Array<Fund>>((resolve, reject) => {
-      console.log(path.resolve(__dirname, "./FundList.json"));
+      console.log(path.resolve(__dirname, this.FundListDirectory));
       fs.readFile(
-        path.resolve(__dirname, "./FundList.json"),
+        path.resolve(__dirname, this.FundListDirectory),
         "utf8",
         (err, data) => {
           if (err) {

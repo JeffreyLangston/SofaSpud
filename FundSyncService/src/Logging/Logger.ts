@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-export class logger {
+export class Logger {
 	private SystemConfig = chalk.bold.underline.white.bgMagenta;
 	private ErrorConfig = chalk.bold.red;
 	private InformationConfig = chalk.white;

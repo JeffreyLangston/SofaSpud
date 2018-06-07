@@ -30,7 +30,10 @@ const outputSize = "full";
 const ApiKey = "Q2I2J8MN4GGIRIZI";
 const FailedFundSyncs = [];
 class FundSyncService {
-    constructor() { }
+    constructor() {
+        this.SyncStartTime = Date.now();
+        log.Information(Date.now + "Fund Sync Started...");
+    }
     GetFundURL(fundSymbol) {
         return `https://www.alphavantage.co/query?function=${FundUrlFunction}&symbol=${fundSymbol}&interval=${QueryFrequency}&outputsize=${outputSize}&apikey=${ApiKey}`;
     }
@@ -75,7 +78,7 @@ class FundSyncService {
                     .catch(function () {
                     log.Error("Error processing!");
                 });
-                yield this.sleep(3000);
+                yield this.sleep(1000);
             }
         });
     }
@@ -88,6 +91,7 @@ class FundSyncService {
                 this.ProcessFundQuery(snapshot.child("Funds"));
             })
                 .then(() => {
+                log.Success("Sync Time:" + (Date.now() - this.SyncStartTime) + " miliseconds");
                 this.ProcessFailedSyncs();
             })
                 .catch(function (error) {
