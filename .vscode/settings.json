@@ -2,11 +2,13 @@
 {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
-    "editor.insertSpaces": false,
+    "editor.insertSpaces": true,
     "editor.renderIndentGuides": false,
     "javascript.format.enable": false,
     "javascript.validate.enable": false,
     "git.autofetch": true,
     "workbench.colorTheme": "Cobalt2",
-    "workbench.iconTheme": "material-icon-theme"
+    "workbench.iconTheme": "material-icon-theme",
+    "tslint.autoFixOnSave": true,
+    "tslint.enable": true
 }

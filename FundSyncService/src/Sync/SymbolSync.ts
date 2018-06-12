@@ -1,46 +1,41 @@
-import { Fund } from "../Model/Fund";
-import * as fs from "fs";
-import * as path from "path";
-import { resolve } from "url";
-import * as admin from "firebase-admin";
+import { Fund } from '../Model/Fund';
+import * as fs from 'fs';
+import * as path from 'path';
+import { FundRepository } from '../Repository/FundRepository';
 
 export class SymbolSync {
-  constructor(db: admin.database.Database) {
-    this.database = db;
+  private fundListDirectory: string = '../Data/FundList.json';
+  private fundRepo: FundRepository;
+  constructor() {
+    this.fundRepo = new FundRepository();
   }
-  private database: admin.database.Database;
-  private FundListDirectory: string = "../Data/FundList.json";
 
-  SyncTrackedFundSymbols() {
+  syncTrackedFundSymbols() {
     this.getFundList()
       .then(
-        function (fundList) {
-          fundList.forEach(fund => {
-            this.database.ref(Fund.StoreName + "/" + fund.Symbol).update({
-              Symbol: fund.Symbol,
-              Name: fund.Name
-            });
+        (fundList) => {
+          fundList.forEach((fund) => {
+            this.fundRepo.updateFund(fund);
           });
-        }.bind(this)
-      )
-      .catch(function (error) {
+        })
+      .catch((error) => {
         console.log(error);
       });
   }
 
-  getFundList(): Promise<Array<Fund>> {
-    return new Promise<Array<Fund>>((resolve, reject) => {
-      console.log(path.resolve(__dirname, this.FundListDirectory));
+  getFundList(): Promise<Fund[]> {
+    return new Promise<Fund[]>((resolve, reject) => {
+      console.log(path.resolve(__dirname, this.fundListDirectory));
       fs.readFile(
-        path.resolve(__dirname, this.FundListDirectory),
-        "utf8",
+        path.resolve(__dirname, this.fundListDirectory),
+        'utf8',
         (err, data) => {
           if (err) {
             reject(err);
           }
-          const funds: Array<Fund> = JSON.parse(data);
-          resolve(funds["funds"]);
-        }
+          const funds: Fund[] = JSON.parse(data);
+          resolve(funds['Funds']);
+        },
       );
     });
   }
