@@ -1,18 +1,15 @@
-import * as request from 'request';
 import * as admin from 'firebase-admin';
-import { Logger } from '../Logging/Logger';
 import { Fund } from '../Model/Fund';
-import { resolve, TIMEOUT } from 'dns';
-import { SymbolSync } from '../Sync/SymbolSync';
-// import { constants } from "os";
-import * as Constants from '../app/Constants';
 import { SoftSpudFirebase } from './firebase';
+import { Logger } from '../Logging/Logger';
 
 export class FundRepository {
   private database: admin.database.Database;
+  private log: Logger;
 
-  public constructor() {
+  public constructor(log: Logger) {
     this.database = SoftSpudFirebase.Instance.Database;
+    this.log = log;
   }
 
   public getAllFundsFromDatabase(): admin.database.Reference {
@@ -23,6 +20,8 @@ export class FundRepository {
     this.database.ref(Fund.StoreName + '/' + fund.Symbol).update({
       Symbol: fund.Symbol,
       Name: fund.Name,
+    }).catch((err) => {
+      this.log.Error('Error updating fund in firebase. Symbol: ' + fund.Symbol + ' error: ' + err);
     });
   }
 
@@ -32,13 +31,18 @@ export class FundRepository {
       {
         [fundQuote.Symbol]: fundQuote,
       },
-      function (error) {
+      (error) => {
         if (error) {
           this.log.Error('Data could not be saved.' + error);
         } else {
           this.log.Success('Data saved successfully.');
         }
       },
-    );
+    ).catch((err) => {
+      this.log.Error(
+      'Error updating fund quote in firebase. Symbol: '
+      + fundQuote.Symbol + ' error: ' + err,
+      );
+    });
   }
 }

@@ -2,12 +2,16 @@ import { Fund } from '../Model/Fund';
 import * as fs from 'fs';
 import * as path from 'path';
 import { FundRepository } from '../Repository/FundRepository';
+import { Logger } from '../Logging/Logger';
 
 export class SymbolSync {
   private fundListDirectory: string = '../Data/FundList.json';
   private fundRepo: FundRepository;
-  constructor() {
-    this.fundRepo = new FundRepository();
+  private log: Logger;
+
+  constructor(log: Logger) {
+    this.log = log;
+    this.fundRepo = new FundRepository(log);
   }
 
   syncTrackedFundSymbols() {
@@ -19,13 +23,13 @@ export class SymbolSync {
           });
         })
       .catch((error) => {
-        console.log(error);
+        this.log.Error(error);
       });
   }
 
   getFundList(): Promise<Fund[]> {
     return new Promise<Fund[]>((resolve, reject) => {
-      console.log(path.resolve(__dirname, this.fundListDirectory));
+      this.log.Information(path.resolve(__dirname, this.fundListDirectory));
       fs.readFile(
         path.resolve(__dirname, this.fundListDirectory),
         'utf8',

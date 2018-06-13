@@ -1,120 +1,127 @@
 import * as request from 'request';
-
 import { Logger } from '../Logging/Logger';
 import { Fund } from '../Model/Fund';
-import { resolve, TIMEOUT } from 'dns';
-import { SymbolSync } from '../Sync/SymbolSync';
-// import { constants } from "os";
+import * as admin from 'firebase-admin';
 import * as Constants from '../app/Constants';
 import { FundRepository } from '..//Repository/FundRepository';
 import { sleep } from '../Helper/Sleeper';
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
 
 export class FundSync {
-  private log = new Logger();
-  private FailedFundSyncs: string[];
-  private SyncStartTime: number;
+  private log: Logger;
+  private failedFundSyncs: string[];
+  private syncStartTime: number;
   private fundRepo: FundRepository;
 
-  constructor() {
-  this.fundRepo = new FundRepository();
-  this.SyncStartTime = Date.now();
-  this.log.Information(Date.now() + Constants.Messages.Started);
-}
+  constructor(log: Logger) {
+    this.log = log;
+    this.fundRepo = new FundRepository(this.log);
+    this.syncStartTime = Date.now();
+    this.log.Information((Date.now()) + Constants.Messages.Started);
+    this.failedFundSyncs = [];
+  }
 
   async synchronizeFunds() {
     const fundList = this.fundRepo.getAllFundsFromDatabase();
     fundList
-			.once('value')
-			.then(snapshot => {
-  this.ProcessFundQuery(snapshot.child(Constants.Firebase.fundTableName));
-})
-			.then(() => {
-  this.log.Success('Sync Time:' + (Date.now() - this.SyncStartTime) + Constants.Miscellaneous.Milliseconds);
-  this.ProcessFailedSyncs();
-})
-			.catch(function (error) {
-  this.log.Error(Constants.Errors.Sync + error);
-});
+      .once('value')
+      .then((snapshot) => {
+        this.processFundQuery(snapshot.child(Constants.Firebase.fundTableName))
+        .then(() => {
+          const timeToComplete = (Date.now() - this.syncStartTime);
+          this.log.Success('Sync Time:' + timeToComplete + Constants.Miscellaneous.Milliseconds);
+          this.processFailedSyncs();
+        })
+        .catch((error) => {
+          this.log.Error(Constants.Errors.Sync + error);
+        });
+      })
+      .catch((error) => {
+        this.log.Error(Constants.Errors.Sync + error);
+      });
   }
 
-  async ProcessFundRecord(fundRecord) {
-    this.GetFundData(fundRecord[Constants.Firebase.fundSymbolColumn])
-			.then(
-				function (fundData) {
-  this.SaveFundData(fundData)
-						.then(
-							function (saveData) {
-  this.log.Success(Constants.Messages.FundUpdated);
-}.bind(this),
-					)
-						.catch(function (error) {
-  this.log.Error(
-								Constants.Errors.SaveRecord + fundData[Constants.Firebase.fundSymbolColumn] + ' ' + error,
-							);
-});
-}.bind(this),
-		)
-			.catch(function (error) {
-  this.FailedFundSyncs.push(fundRecord[Constants.Firebase.fundSymbolColumn]);
-  this.log.Error(error);
-});
+  async processFundRecord(fundRecord) {
+    this.getFundData(fundRecord[Constants.Firebase.fundSymbolColumn])
+      .then(
+        (fundData) => {
+          this.fundRepo.updateFundQuote(fundData)
+            .then(
+              (saveData) => {
+                this.log.Success(Constants.Messages.FundUpdated);
+              },
+          )
+            .catch((error) => {
+              this.log.Error(
+                Constants.Errors.SaveRecord
+                + fundData[Constants.Firebase.fundSymbolColumn] + ' ' + error,
+              );
+            });
+        })
+      .catch((error) => {
+        this.failedFundSyncs.push(fundRecord[Constants.Firebase.fundSymbolColumn]);
+        this.log.Error(error);
+      });
   }
 
-  sleeper(ms) {
-    return function (x) {
-      return new Promise(resolve => setTimeout(() => resolve(x), ms));
-    };
-  }
-
-  async ProcessFundQuery(FundSnapshot: admin.database.DataSnapshot) {
-    const childKey = FundSnapshot.key;
-    const childData = FundSnapshot.val();
+  async processFundQuery(fundSnapshot: admin.database.DataSnapshot) {
+    const childKey = fundSnapshot.key;
+    const childData = fundSnapshot.val();
     const childDataKeys = Object.keys(childData);
     for (const fundKey of childDataKeys) {
       this.log.Information(Constants.Firebase.query + fundKey);
       const fundRecord = childData[fundKey];
-      await this.ProcessFundRecord(fundRecord)
-				.then(function () {
-  this.log.Success('ProcessFunQuery success for: ' + fundKey);
-})
-				.catch(function () {
-  this.log.Error('ProcessFundQuery Failed for: ' + fundKey);
-});
-      await sleep(Constants.FundQuery.QueryDelay);
+      await this.processFundRecord(fundRecord)
+        .then(() => {
+          this.log.Success('ProcessFunQuery success for: ' + fundKey);
+        })
+        .catch(() => {
+          this.log.Error('ProcessFundQuery Failed for: ' + fundKey);
+        });
+      this.log.System('waiting...');
+      await sleep(Constants.FundQuery.QueryDelay).catch(() => {
+        this.log.Error('error using sleep function');
+      });
+      this.log.System('done waiting...');
     }
   }
 
-  ProcessFailedSyncs() {
+  processFailedSyncs() {
+    this.log.Information('Failed sync count: ' + this.failedFundSyncs.length);
     this.log.Information('Processing Failed Queries...');
   }
 
-  async GetFundData(FundSymbol): Promise<Fund> {
+  async getFundData(fundSymbol): Promise<Fund> {
     return new Promise<Fund>((resolve, reject) => {
-      this.log.Information(Constants.FundQuery.GetFundURL(FundSymbol));
-      request(Constants.FundQuery.GetFundURL(FundSymbol), { json: true }, (err, res, body) => {
+      this.log.Information(Constants.FundQuery.GetFundURL(fundSymbol));
+      request(Constants.FundQuery.GetFundURL(fundSymbol), { json: true }, (err, res, body) => {
         if (
-					err ||
-					body === undefined ||
-					body[Constants.FundQuery.ErrorProperty] ||
-					body[Constants.FundQuery.TimeSeriesProperty] === false
-				) {
+          err ||
+          body === undefined ||
+          body[Constants.FundQuery.ErrorProperty] ||
+          !body[Constants.FundQuery.TimeSeriesProperty]
+        ) {
           if (err) {
             this.log.Error(err);
           }
           if (body) {
             this.log.Error(body);
           }
-          this.log.Error('Error Getting Symbol: ' + FundSymbol + ' ' + err);
+          if (res) {
+            this.log.Error(res);
+          }
+          this.log.Error('Error Getting Symbol: ' + fundSymbol + ' ' + err);
           reject('Error: ' + err);
         } else {
           this.log.Success('Fund data received');
           this.log.Information(body);
           const fundData = body[Constants.FundQuery.TimeSeriesProperty];
+
           const firstEntryKey = Object.keys(body[Constants.FundQuery.TimeSeriesProperty]);
           const priceDate = firstEntryKey[0];
           const closePrice = fundData[firstEntryKey[0]][Constants.FundQuery.ClosingPriceProperty];
 
-          const newFundQuote: Fund = new Fund(FundSymbol);
+          const newFundQuote: Fund = new Fund(fundSymbol);
           newFundQuote.Price = closePrice;
           newFundQuote.QuoteDate = new Date(priceDate);
 
