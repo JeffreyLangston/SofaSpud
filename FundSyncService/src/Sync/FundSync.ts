@@ -42,10 +42,10 @@ export class FundSync {
   }
 
   async processFundRecord(fundRecord) {
-    this.getFundData(fundRecord[Constants.Firebase.fundSymbolColumn])
+    await this.getFundData(fundRecord[Constants.Firebase.fundSymbolColumn])
       .then(
-        (fundData) => {
-          this.fundRepo.updateFundQuote(fundData)
+       async (fundData) => {
+         await this.fundRepo.updateFundQuote(fundData)
             .then(
               (saveData) => {
                 this.log.Success(Constants.Messages.FundUpdated);
@@ -57,7 +57,7 @@ export class FundSync {
                 + fundData[Constants.Firebase.fundSymbolColumn] + ' ' + error,
               );
             });
-        })
+       })
       .catch((error) => {
         this.failedFundSyncs.push(fundRecord[Constants.Firebase.fundSymbolColumn]);
         this.log.Error(error);
@@ -105,10 +105,10 @@ export class FundSync {
             this.log.Error(err);
           }
           if (body) {
-            this.log.Error(body);
+            this.log.Error(JSON.stringify(body));
           }
           if (res) {
-            this.log.Error(res);
+            this.log.Error(JSON.stringify(res));
           }
           this.log.Error('Error Getting Symbol: ' + fundSymbol + ' ' + err);
           reject('Error: ' + err);

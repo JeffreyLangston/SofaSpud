@@ -4,7 +4,7 @@ export class FundQuery {
   public static QueryFrequency: string = '60min';
   public static outputSize: string = 'full';
   public static ApiKey: string = 'Q2I2J8MN4GGIRIZI';
-  public static QueryDelay: number = 1000;
+  public static QueryDelay: number = 3500;
   public static GetFundURL(fundSymbol): string {
     return `https://www.alphavantage.co/query?function=${this.FundUrlFunction}&symbol=${fundSymbol}&interval=${this.QueryFrequency}&outputsize=${this.outputSize}&apikey=${this.ApiKey}`;
   }

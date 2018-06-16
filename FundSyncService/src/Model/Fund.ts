@@ -5,7 +5,7 @@ export class Fund implements IFund {
     this.Symbol = symbol;
   }
 
-  public static StoreName: 'Fund';
+  public static StoreName: 'Admin/Fund';
 
   public Symbol: string;
   public Name: string;
