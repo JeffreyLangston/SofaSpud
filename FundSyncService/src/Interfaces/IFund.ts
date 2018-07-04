@@ -1,6 +1,6 @@
 export interface IFund {
   Symbol: string;
   Name: string;
-  Price: number;
+  Quote: number;
   QuoteDate: Date;
 }

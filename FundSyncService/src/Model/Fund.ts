@@ -5,10 +5,12 @@ export class Fund implements IFund {
     this.Symbol = symbol;
   }
 
-  public static StoreName: 'Admin/Fund';
+  public static StoreName: 'System/Fund';
 
   public Symbol: string;
   public Name: string;
-  public Price: number;
+  public Quote: number;
   public QuoteDate: Date;
+  public FailedCount: number;
+  public FailedReasons: Array<string>;
 }

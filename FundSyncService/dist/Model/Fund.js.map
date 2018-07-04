@@ -1,1 +1,1 @@
-{"version":3,"file":"Fund.js","sourceRoot":"","sources":["../../src/Model/Fund.ts"],"names":[],"mappings":";;AAEA;IACE,YAAY,MAAc;QACxB,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACvB,CAAC;CAQF;AAXD,oBAWC"}
+{"version":3,"file":"Fund.js","sourceRoot":"","sources":["../../src/Model/Fund.ts"],"names":[],"mappings":";;AAEA;IACE,YAAY,MAAc;QACxB,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACvB,CAAC;CAUF;AAbD,oBAaC"}

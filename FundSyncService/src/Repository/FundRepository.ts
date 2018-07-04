@@ -17,7 +17,7 @@ export class FundRepository {
   }
 
   public updateFund(fund: Fund) {
-    this.database.ref(Fund.StoreName + '/' + fund.Symbol).update({
+    this.database.ref('System/Funds/' + fund.Symbol).update({
       Symbol: fund.Symbol,
       Name: fund.Name,
     }).catch((err) => {
@@ -25,11 +25,24 @@ export class FundRepository {
     });
   }
 
+  public async incrementSyncError(fundSymbol: string) {
+    const ref = this.getFundRef(fundSymbol);
+    ref.child('FailedCount').transaction((currentFailedCount) => {
+      return currentFailedCount + 1;
+    });
+  }
+
+  public getFundRef(fundSymbol: string):admin.database.Reference {
+    const ref = this.database.ref('System/Funds/' + fundSymbol);
+    return ref;
+  }
+
   public async updateFundQuote(fundQuote: Fund): Promise<void> {
-    const ref = this.database.ref(Fund.StoreName);
+    const ref = this.database.ref('System/Funds/' + fundQuote.Symbol);
     return ref.update(
       {
-        [fundQuote.Symbol]: fundQuote,
+        Quote: fundQuote.Quote,
+        QuoteDate: fundQuote.QuoteDate,
       },
       (error) => {
         if (error) {

@@ -14,7 +14,7 @@ export class SymbolSync {
     this.fundRepo = new FundRepository(log);
   }
 
-  syncTrackedFundSymbols() {
+  async syncTrackedFundSymbols() {
     this.getFundList()
       .then(
         (fundList) => {
