@@ -41,6 +41,7 @@ export class FundRepository {
     const ref = this.database.ref('System/Funds/' + fundQuote.Symbol);
     return ref.update(
       {
+        FailedCount: 0,
         Quote: fundQuote.Quote,
         QuoteDate: fundQuote.QuoteDate,
       },

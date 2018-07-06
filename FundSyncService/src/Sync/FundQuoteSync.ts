@@ -33,7 +33,7 @@ export class FundQuoteSync {
            snapshot.hasChild(Constants.Firebase.fundTableName)
           ) {
       this.processFundSnapshot(snapshot);
-    }else {
+    } else {
           // we have no funds in the database.
       const symbolSync: SymbolSync = new SymbolSync(this.log);
       symbolSync.syncTrackedFundSymbols();
@@ -108,9 +108,13 @@ export class FundQuoteSync {
   processFailedSyncs() {
     this.log.Information('Failed sync count: ' + this.failedFundSyncs.length);
     this.log.Information('Processing Failed Queries...');
-    this.failedFundSyncs.forEach((fund) => {
-      this.processFundRecord(fund);
-    });
+    while (this.failedFundSyncs.length > 0) {
+      const failedFunds: string[] = this.failedFundSyncs;
+      this.failedFundSyncs = [];
+      failedFunds.forEach((fund) => {
+        this.processFundRecord(fund);
+      });
+    }
   }
 
   async; getFundData(fundSymbol) : Promise < Fund > {

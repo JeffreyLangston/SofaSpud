@@ -6,6 +6,7 @@ import { resolve, TIMEOUT } from 'dns';
 
 import { FundQuoteSync } from './Sync/FundQuoteSync';
 import * as Constants from './app/Constants';
+import * as googleFinance from 'google-finance/index';
 
 const log = new Logger();
 log.System(Constants.Messages.ApplicationWelcome);
