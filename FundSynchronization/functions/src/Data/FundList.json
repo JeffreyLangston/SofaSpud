@@ -1,0 +1,126 @@
+{
+	"Funds": 
+	[
+		{
+			"Symbol": "VCN",
+			"Name": "Vanguard FTSE Canada All Cap Index ETF",
+			"Type": "Canada",
+			"Description": "Exposure to Canadian small, medium and large caps, ultra low fee",
+			"MER": 0.05
+		},
+		{
+			"Symbol": "XIC",
+			"Name": "iShares Core S&P/TSX Capped Composite Index ETF",
+			"Type": "Canada",
+			"Description": "Tracks Canada's best known index with a very low fee",
+			"MER": 0.05
+		},
+		{
+			"Symbol": "HXT",
+			"Name": "Horizons S&P/TSX 60 ETF",
+			"Type": "Canada",
+			"Description": "Exposure to Canadian small, medium and large caps, ultra low fee",
+			"MER": 0.03
+		},
+		{
+			"Symbol": "ZCN",
+			"Name": "BMO S&P TSX Capped Composite IDX ETF",
+			"Type": "Canada",
+			"Description": "Exposure to Canadian small, medium and large caps, ultra low fee",
+			"MER": 0.05
+		},
+
+		{
+			"Symbol": "XUU",
+			"Name": "iShares Core S&P US Total Market Index ETF",
+			"Type": "US",
+			"Description": "",
+			"MER": 0.07
+		},
+		{
+			"Symbol": "VFV",
+			"Name": "Vanguard S&P 500 Index ETF",
+			"Type": "US",
+			"Description": "",
+			"MER": 0.08
+		},
+		{
+			"Symbol": "VSP",
+			"Name": "Vanguard S&P 500 Index ETF (CAD-hedged)",
+			"Type": "US",
+			"Description": "",
+			"MER": 0.08
+		},
+		{
+			"Symbol": "ZCN",
+			"Name": "BMO S&P500 Index ETF (CAD)",
+			"Type": "US",
+			"Description": "",
+			"MER": 0.08
+		},
+
+		{
+			"Symbol": "XAW",
+			"Name": "iShares Core MSCI All Country World ex Canada Index ETF",
+			"Type": "World ex-Canada",
+			"Description": "",
+			"MER": 0.2
+		},
+		{
+			"Symbol": "XEF",
+			"Name": "iShares Core MSCI EAFE IMI Index ETF",
+			"Type": "International",
+			"Description": "",
+			"MER": 0.2
+		},
+		{
+			"Symbol": "VEE",
+			"Name": "Vanguard FTSE Emerging Markets All Cap Index ETF",
+			"Type": "Emerging",
+			"Description": "",
+			"MER": 0.23
+		},
+
+		{
+			"Symbol": "ZAG",
+			"Name": "BMO Aggregate Bond Index ETF",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.09
+		},
+		{
+			"Symbol": "VSB",
+			"Name": "Vanguard Canadian Short-term Bond Index ETF",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.1
+		},
+		{
+			"Symbol": "ZDB",
+			"Name": "BMO Discount Bond Index ETF",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.09
+		},{
+			"Symbol": "BXF",
+			"Name": "First Asset 1-5 Year Laddered Government Strip Bond Index ETF (BXF)",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.2
+		},
+		{
+			"Symbol": "ZPR",
+			"Name": "BMO Laddered Preferred Share Index ETF",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.45
+		},
+		{
+			"Symbol": "XSB",
+			"Name": "iShares Core Canadian Short Term Bond Index ETF",
+			"Type": "Fixed Income",
+			"Description": "",
+			"MER": 0.08
+		}
+	]
+}

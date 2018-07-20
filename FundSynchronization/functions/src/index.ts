@@ -1,13 +1,9 @@
-import * as request from 'request';
-import * as admin from 'firebase-admin';
 import { Logger } from './Logging/Logger';
-import { Fund } from './Model/Fund';
-import { resolve, TIMEOUT } from 'dns';
 import  * as functions  from 'firebase-functions';
 
 import { FundQuoteSync } from './Sync/FundQuoteSync';
 import * as Constants from './app/Constants';
-import * as googleFinance from 'google-finance/index';
+
 
 const log = new Logger();
 log.System(Constants.Messages.ApplicationWelcome);
@@ -29,3 +25,18 @@ export const addMessage = functions.https.onRequest((req, res) => {
     // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
   return res.send('Sync Started...');
 });
+
+
+/* import * as functions from 'firebase-functions';
+import { FundQuoteSync } from './Sync/FundQuoteSync';
+
+// Start writing Firebase Functions
+// https://firebase.google.com/docs/functions/typescript
+
+const fundSync = new FundQuoteSync();
+
+export const helloWorld = functions.https.onRequest((request, response) => {
+  const message = fundSync.fundSyncMessage();
+ response.send(message);
+
+}); */

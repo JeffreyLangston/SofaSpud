@@ -1,0 +1,45 @@
+{
+  "name": "fund-sync-service",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "Jeff Langston",
+  "license": "ISC",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "build": "tsc",
+    "serve": "npm run build && firebase serve --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "debug": "nodemon --inspect dist/",
+    "start:watch": "nodemon dist//index.js",
+    "start:debug": "node --inspect dist//index.js",
+    "start:debug:brk": "node --inspect-brk dist//index.js",
+    "start:debug:ts": "node --inspect --require ts-node/register dist//index.ts",
+    "start:debug:ts:brk": "node --inspect-brk --require ts-node/register dist//index.ts",
+    "logs": "firebase functions:log"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "~5.12.1",
+    "firebase-functions": "^1.0.3",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^10.0.8",
+    "@types/request": "^2.47.0",
+    "chalk": "^2.4.1",
+    "fs": "0.0.1-security",
+    "google-finance": "^0.1.11",
+    "moment": "^2.22.2",
+    "request": "^2.85.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4",
+    "ts-node": "^6.0.3",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
+    "typescript": "^2.9.1"
+  },
+  "private": true
+}

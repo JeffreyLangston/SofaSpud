@@ -30,12 +30,12 @@ export class FundQuoteSync {
     if (snapshot &&
            snapshot.hasChild(Constants.Firebase.fundTableName)
           ) {
-      this.processFundSnapshot(snapshot).then().catch();
+            await this.processFundSnapshot(snapshot);
     } else {
           // we have no funds in the database.
       const symbolSync: SymbolSync = new SymbolSync(this.log);
-      symbolSync.syncTrackedFundSymbols();
-      this.processFundSnapshot(snapshot);
+      await symbolSync.syncTrackedFundSymbols();
+      await this.processFundSnapshot(snapshot);
     }
 
       // .catch((error) => {
@@ -74,15 +74,14 @@ export class FundQuoteSync {
               );
             });
        })
-      .catch((error) => {
-        this.fundRepo.incrementSyncError(fundSymbol);
+      .catch(async (error) =>  {
+       await this.fundRepo.incrementSyncError(fundSymbol);
         this.failedFundSyncs.push(fundSymbol);
         this.log.Error(error);
       });
   }
 
   async processFundQuery(fundSnapshot: admin.database.DataSnapshot) {
-    const childKey = fundSnapshot.key;
     const childData = fundSnapshot.val();
     const childDataKeys = Object.keys(childData);
     for (const fundKey of childDataKeys) {
@@ -110,7 +109,7 @@ export class FundQuoteSync {
       const failedFunds: string[] = this.failedFundSyncs;
       this.failedFundSyncs = [];
       failedFunds.forEach((fund) => {
-        this.processFundRecord(fund);
+        this.processFundRecord(fund).then().catch();
       });
     }
   }
