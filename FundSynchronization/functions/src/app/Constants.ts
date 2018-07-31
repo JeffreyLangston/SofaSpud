@@ -20,7 +20,7 @@ export class Miscellaneous {
 export class Firebase {
   public static query: string = 'query for ';
   public static firebaseURL: string = 'https://sofaspuddev.firebaseio.com';
-  public static firebaseSDKAdminFile: string = 'c:/sofaspuddev-firebase-adminsdk-00jxe-e314820134.json';
+  public static firebaseSDKAdminFile: string = '../API/sofaspuddev-firebase-adminsdk-00jxe-e314820134.json';
   public static fundTableName: string = 'System/Funds/';
   public static fundSymbolColumn: string = 'Symbol';
 }

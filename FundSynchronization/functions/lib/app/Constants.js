@@ -22,7 +22,7 @@ class Firebase {
 }
 Firebase.query = 'query for ';
 Firebase.firebaseURL = 'https://sofaspuddev.firebaseio.com';
-Firebase.firebaseSDKAdminFile = 'c:/sofaspuddev-firebase-adminsdk-00jxe-e314820134.json';
+Firebase.firebaseSDKAdminFile = '../API/sofaspuddev-firebase-adminsdk-00jxe-e314820134.json';
 Firebase.fundTableName = 'System/Funds/';
 Firebase.fundSymbolColumn = 'Symbol';
 exports.Firebase = Firebase;

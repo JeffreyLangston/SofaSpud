@@ -5,9 +5,10 @@
   "keywords": [],
   "author": "Jeff Langston",
   "license": "ISC",
+  "engines": {"node": "8"},
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "build": "tsc",
+    "build": "tsc && node scripts/CopyFiles.js",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
